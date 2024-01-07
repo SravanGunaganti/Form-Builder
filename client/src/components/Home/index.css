@@ -1,0 +1,104 @@
+.bg-container {
+  background-color: white;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0px 20px 0px;
+}
+.home-container {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  border-bottom: none;
+}
+.header {
+  text-align: center;
+  margin: 10px 0px 20px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.header-heading {
+  font-size: 50px;
+  font-weight: normal;
+}
+
+.heading-description {
+  font-size: 12px;
+  font-family: "Roboto";
+}
+.line {
+  width: 100%;
+  color: green;
+}
+.new-form-btn {
+  height: 40px;
+  width: fit-content;
+  background-color: green;
+  color: white;
+  font-weight: 700;
+  border-radius: 5px;
+  padding: 5px;
+  align-self: center;
+}
+.forms-list-container {
+  margin: 40px 0px 20px;
+}
+.forms-list-heading {
+  color: rgb(2, 29, 2);
+  font-size: 50px;
+  font-weight: normal;
+}
+.forms-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style-type: none;
+  margin: 15px 0px 15px 0px;
+}
+.form-title {
+  color: rgb(2, 29, 2);
+  font-size: 25px;
+  font-weight: normal;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.form-card {
+  padding: 25px;
+  width: 250px;
+  height: 130px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.form-card-btn {
+  background-color: transparent;
+  border-color: none;
+  border-width: 0px;
+  border-radius: 4px;
+  font-weight: 600;
+  padding: 7px;
+  font-size: 15px;
+}
+
+.form-card-btn:hover {
+  background-color: rgb(129, 188, 240);
+}
+.form-btn-container {
+  display: flex;
+  justify-content: space-around;
+}
+.view {
+  color: green;
+}
+.edit {
+  color: rgb(6, 141, 141);
+}
+.delete {
+  color: red;
+}

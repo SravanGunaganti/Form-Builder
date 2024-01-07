@@ -1,6 +1,6 @@
 # FORM BUILDER APP
-1.git clone https://github.com/SravanGunaganti/Form-Builder.git
-2.cd Form-Builder
+1. git clone https://github.com/SravanGunaganti/Form-Builder.git
+2. cd Form-Builder
 
 Form-Builder/
 |-- client/    

@@ -1,0 +1,118 @@
+.input-field-box {
+  width: 100%;
+  position: relative;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30px;
+  margin-right: auto;
+}
+.form-container-card {
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb(206, 204, 204);
+  width: 50%;
+  padding: 20px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+  gap: 30px;
+}
+.form-container {
+  display: flex;
+  width: 80%;
+  justify-content: center;
+}
+.input-list {
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  grid-gap: 10px 30%;
+}
+
+.field-container {
+  width: 100%;
+}
+.form-input-field {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  padding: 7px 0px;
+  color: black;
+  border-color: gray;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+}
+.form-input-label {
+  position: absolute;
+  left: 0px;
+  font-size: 15px;
+  top: 8px;
+  pointer-events: none;
+  transition: 0.2s;
+  color: rgb(114, 112, 112);
+}
+
+.form-input-field:focus + .form-input-label,
+.form-input-field:valid + .form-input-label {
+  top: -15px;
+  font-size: 15px;
+  color: rgb(44, 137, 224);
+}
+.form-input-field:focus {
+  border-color: rgb(44, 137, 224);
+}
+
+.form-input-field:focus::placeholder {
+  color: gray;
+}
+
+.form-input-field:focus::placeholder {
+  color: gray;
+}
+
+.form-input-field::-webkit-input-placeholder {
+  color: transparent; /* Change this to your preferred color */
+}
+
+.form-input-field::-moz-placeholder {
+  color: transparent; /* Change this to your preferred color */
+}
+
+.form-input-field:-ms-input-placeholder {
+  color: transparent; /* Change this to your preferred color */
+}
+
+/* Standard placeholder */
+.form-input-field::placeholder {
+  color: transparent;
+}
+
+.form-input-field[type="date"] {
+  color: transparent;
+}
+.form-input-field[type="date"]:focus {
+  color: gray;
+}
+.form-input-field[type="date"]:valid {
+  color: black;
+}
+/* .form-input-field[type=email]:+ .form-input-label{
+  top: -15px;
+    font-size: 15px;
+    color: rgb(241, 11, 11);
+} */
+/* .input-err{
+  position:absolute;
+  bottom:-15px;
+  color:transparent;
+}
+.form-input-field[type=email]:empty + .input-err{
+  position:absolute;
+  bottom:-15px;
+  color:red;
+} */
