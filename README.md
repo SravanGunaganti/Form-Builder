@@ -3,8 +3,8 @@
 2. cd Form-Builder
 
 Form-Builder/
-|-- client/    
-|-- server/ 
+1. |-- client/    
+2. |-- server/ 
 
 Run client
 1. cd client
