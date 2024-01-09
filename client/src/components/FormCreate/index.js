@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RiPencilFill } from "react-icons/ri";
 import { BiGridVertical } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
@@ -39,17 +39,17 @@ const FormCreate = () => {
   });
   const [inputStatus, setInputStatus] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [isSubmit, setIsSubmit] = useState(false);
+
   const [forms, setForms] = useState([]);
   const navigate = useNavigate("/");
+
+  const dragInput = useRef(0);
+  const draggedOverInput = useRef(0);
 
   useEffect(() => {
     const fetchForms = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/forms"); // Adjust the endpoint as needed
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch forms");
-        // }
+        const response = await fetch("http://localhost:4000/api/forms"); 
         const formsData = await response.json();
         setForms(formsData);
       } catch (error) {
@@ -66,23 +66,26 @@ const FormCreate = () => {
     const formsTitle = forms.filter((each) => each.title === title);
     if (title === "Untitled" || title === "") {
       setErrMsg("Enter Proper Form Title");
+      return false;
     } else if (inputFields.length === 0) {
       setErrMsg("Please add at least 1 input field.");
+      return false;
     } else if (inputFields.length > 20) {
       setErrMsg("Please limit the input fields to 20 or fewer.");
+      return false;
     } else if (titleFields.length > 1) {
       setErrMsg("Form have multiple title fields");
+      return false;
     } else if (formsTitle.length > 0) {
       setErrMsg(`Form with title ${title} already exist`);
+      return false;
     } else {
-      setIsSubmit(true);
+      return true;
     }
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (isSubmit) {
-      setIsSubmit(false);
+    if (await validateFields()) {
       try {
         const response = await fetch("http://localhost:4000/api/forms", {
           method: "POST",
@@ -101,16 +104,14 @@ const FormCreate = () => {
         }
 
         const data = await response.json();
+        console.log(data);
 
-        
         navigate("/");
       } catch (error) {
-        setErrMsg(error.message)
+        setErrMsg(error.message);
         console.error("There was an error submitting the form:", error);
       }
     }
-
-    console.log("Form submitted:", formData);
   };
 
   const inputStatusChange = () => {
@@ -119,10 +120,10 @@ const FormCreate = () => {
   };
 
   function generateUniqueId() {
-    const timestamp = Date.now().toString(36); // Convert timestamp to base36 string
-    const randomString = Math.random().toString(36).substr(2, 5); // Generate random string
+    const timestamp = Date.now().toString(36); 
+    const randomString = Math.random().toString(36).substr(2, 5);
 
-    return `${timestamp}-${randomString}`; // Combine timestamp and random string
+    return `${timestamp}-${randomString}`;
   }
 
   const addInput = (input, label) => {
@@ -147,7 +148,6 @@ const FormCreate = () => {
   };
 
   const handleTitleFieldChange = (id, value) => {
-
     setErrMsg("");
     let foundInput = formData?.inputFields?.filter(
       (input) => input.title === value
@@ -164,7 +164,7 @@ const FormCreate = () => {
           return input;
         }
       });
-      console.log(formData);
+      
       return { ...formData, inputFields: modifiedList };
     } else {
       setErrMsg(`input field with ${value} already exist`);
@@ -178,7 +178,7 @@ const FormCreate = () => {
           return input;
         }
       });
-      console.log(formData);
+      
       return { ...formData, inputFields: modifiedList };
     }
   };
@@ -201,6 +201,19 @@ const FormCreate = () => {
     let filteredList = formData.inputFields.filter((input) => input.id !== id);
     setFormData({ ...formData, inputFields: filteredList });
   };
+ 
+
+  function handleSort() {
+    const inputsClone = [...formData.inputFields];
+    const temp = inputsClone[dragInput.current];
+   
+    inputsClone.splice(dragInput.current,1)
+    inputsClone.splice(draggedOverInput.current,0,temp)
+    
+    
+    
+    setFormData({ ...formData, inputFields: inputsClone });
+  }
 
   return (
     <div className="create-form-container">
@@ -222,9 +235,18 @@ const FormCreate = () => {
             </button>
           </div>
 
-          <div className="input-list-container">
+          <ul className="input-list-container">
             {formData?.inputFields?.map((input, index) => (
-              <div className="list-item" key={index}>
+              <li
+                className="list-item"
+                key={index}
+                draggable
+                onDragStart={() => (dragInput.current = index)}
+                onDragEnter={() => {
+                  draggedOverInput.current = index;
+                }}
+                onDragEnd={handleSort}
+                onDragOver={(e)=>e.preventDefault()}>
                 <BiGridVertical size={25} />
                 <input
                   className="input-field-read"
@@ -252,9 +274,9 @@ const FormCreate = () => {
                   onClick={() => deleteField(input.id)}>
                   <MdDelete color="red" size={25} />
                 </button>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
 
           {!inputStatus ? (
             <button
@@ -275,6 +297,10 @@ const FormCreate = () => {
                   <button
                     key={field.id}
                     className="input-type-btn"
+                    draggable
+                    onDragEnd={() => {
+                      addInput(field.inputType, field.label);
+                    }}
                     onClick={() => {
                       addInput(field.inputType, field.label);
                     }}>
@@ -361,8 +387,7 @@ const FormCreate = () => {
         className="submit-btn create-form-btn"
         onClick={(e) => {
           handleSubmit(e);
-        }}
-        disabled={!isSubmit}>
+        }}>
         CREATE FORM
       </button>
     </div>

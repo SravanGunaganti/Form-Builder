@@ -34,8 +34,6 @@ router.post("/", async (req, res) => {
       });
 
   try {
-    // const found = await formSch.findOne({ title: req.body.title });  
-    //   if(found) throw new Error(`Form With Title ${req.body.title} already exist`);
       const newForm = await form.save();
       res.status(201).json(newForm);
   } catch (err) {

@@ -173,3 +173,11 @@
 .create-form-btn:disabled {
   opacity: 0.5;
 }
+.drop-heading{
+  color: rgb(108, 170, 250);
+  padding:10px;
+  font-size:20px;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 2px;
+}

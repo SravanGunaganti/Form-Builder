@@ -16,6 +16,7 @@ const FormView = () => {
 
   const [errMsg, setErrMsg] = useState("");
 
+
   const { id } = useParams();
   const navigate =useNavigate();
   useEffect(() => {
@@ -24,7 +25,7 @@ const FormView = () => {
         const response = await fetch(`http://localhost:4000/api/forms/${id}`);
         if (!response.ok) {
           navigate("/")
-          throw new Error(`Failed to fetch forms or Form with id '${id}' not Found `);
+          // throw new Error(`Failed to fetch forms or Form with id '${id}' not Found `);
         }
         const formsData = await response.json();
 
@@ -49,7 +50,7 @@ const FormView = () => {
 
   const handleInput = (id, val) => {
     setErrMsg("");
-    console.log(id, val);
+    
     const modifiedFields = formData.inputFields.map((input) => {
       if (input.id === id) {
         setForm({ ...form, [input.title]: val });
@@ -66,11 +67,10 @@ const FormView = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const isEmpty = formData.inputFields.filter((input) => input.value === "");
-    console.log("empty", isEmpty);
     if (isEmpty.length === 0) {
       console.log(form);
 
-      alert("check the output in the console");
+      alert("check the form details in the console");
       setFormData(initialFormData);
     } else {
       setErrMsg("Enter all input fields");
@@ -85,12 +85,13 @@ const FormView = () => {
           <ul className="input-list">
             {formData?.inputFields?.map((field, index) => (
               <li className="input-field-box" key={field.id}>
-                <input
-                  className="form-input-field "
+               <input
+                  className="form-input-field"
                   type={field.inputType}
                   placeholder={field.placeholder}
                   value={field.value || ""}
                   required
+                  autoComplete={field.inputType==="password"?"off":"on"}
                   onChange={(e) => handleInput(field.id, e.target.value)}
                 />
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RiPencilFill } from "react-icons/ri";
 import { BiGridVertical } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
@@ -32,6 +32,7 @@ const FormEdit = () => {
     title: "Untitled",
     inputFields: [],
   });
+  const [formsData,setFormsData]=useState([])
   const [editor, setEditor] = useState({
     id: "",
     editField: "",
@@ -41,87 +42,67 @@ const FormEdit = () => {
   });
   const [inputStatus, setInputStatus] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [isSubmit, setIsSubmit] = useState(false);
+
   const { id } = useParams();
-  const navigate=useNavigate("/")
-  // const [foundForm,setFoundForm]=useState(false)
-  // const [fetchedForms,setFetchedForms]=useState([])
-
-  // const [inputList, setInputList] = useState([]);
-
-  // const handleInputChange = (event) => {
-  //   const { name, value } = event.target;
-  //   setFormData({ ...formData, [name]: value });
-
-  // };
-  //     useEffect(()=>{
-
-  //         const fetchForms = async () => {
-  //     const response = await fetch(`http://localhost:4000/api/forms/${id}`); // Adjust the endpoint as needed
-  //     if (response.ok) {
-  //       const fetchedData = await response.json();
-  //       setFormData(fetchedData);
-
-  //     };
-  //   }
-
-  //   fetchForms();
-  //     })
+  const navigate = useNavigate("/");
+  const dragInput = useRef(0);
+  const draggedOverInput = useRef(0);
+ 
   useEffect(() => {
     const fetchForms = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/forms/${id}`); // Adjust the endpoint as needed
+        const response = await fetch(`http://localhost:4000/api/forms/`);
         if (!response.ok) {
-          navigate("/")
+          navigate("/");
           throw new Error("Failed to fetch forms");
         }
-        const formsData = await response.json();
-        setFormData(formsData);
-      } catch (error) {
+        const fetchedFormsData = await response.json();
+        const idFormData=fetchedFormsData.find(each=>each._id===id)
+        if(idFormData._id===id){
+          setFormsData(fetchedFormsData)
+          setFormData(idFormData);
+        }else{
+          navigate("/")
+        }
         
+      } catch (error) {
         console.error("Error fetching forms:", error);
       }
     };
 
-    // Call the function to fetch forms when the component mounts
+   
     fetchForms();
     // eslint-disable-next-line
-  },[id]);
-
-  // const formValidation=(title)=>{
-  //     const isFound = fetchedForms.filter(
-  //       (form) => form.title === title
-  //     );
-  //     return isFound.length>0;
-
-  // }
+  }, [id]);
+ 
 
   const validateFields = () => {
-    // setFoundForm(!foundForm)
     const { title, inputFields } = formData;
-    const titleFields=inputFields.filter((each)=>each.title==="title"
-    )
-    // console.log("fetchedForms",fetchedForms)
+    const titleFields = inputFields.filter((each) => each.title === "title");
+    const formsTitle = formsData.filter((each) => each.title === title && each._id!==id);
     if (title === "Untitled" || title === "") {
       setErrMsg("Enter Proper Form Title");
+      return false;
     } else if (inputFields.length === 0) {
       setErrMsg("Please add at least 1 input field.");
+      return false;
     } else if (inputFields.length > 20) {
       setErrMsg("Please limit the input fields to 20 or fewer.");
-      // } else if (formValidation(title)) {
-      //   setErrMsg(`Form with title ${title} already exist`);
-    }else if(titleFields.length>1){  
-
-      setErrMsg("Form have multiple title fields")
-    } else {
-      setIsSubmit(true);
+      return false;
+    } else if (titleFields.length > 1) {
+      setErrMsg("Form have multiple title fields");
+      return false;
+    }else if (formsTitle.length > 0) {
+      setErrMsg(`Form with title ${title} already exist`);
+      return false;
+    }else {
+      return true;
     }
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (isSubmit) {
-      setIsSubmit(false);
+    if (validateFields()) {
       try {
         const response = await fetch(`http://localhost:4000/api/forms/${id}`, {
           method: "PUT",
@@ -141,15 +122,11 @@ const FormEdit = () => {
 
         const data = await response.json();
         console.log("Form data submitted successfully:", data);
-        navigate("/")
+        navigate("/");
       } catch (error) {
-        setErrMsg(error.message)
-        
+        setErrMsg(error.message);
       }
     }
-    
-    console.log("Form submitted:", formData);
-    
   };
 
   const inputStatusChange = () => {
@@ -158,10 +135,10 @@ const FormEdit = () => {
   };
 
   function generateUniqueId() {
-    const timestamp = Date.now().toString(36); 
+    const timestamp = Date.now().toString(36);
     const randomString = Math.random().toString(36).substr(2, 5);
 
-    return `${timestamp}-${randomString}`; 
+    return `${timestamp}-${randomString}`;
   }
 
   const addInput = (input, label) => {
@@ -185,12 +162,10 @@ const FormEdit = () => {
   };
 
   const handleTitleFieldChange = (id, value) => {
-    
     setErrMsg("");
     let foundInput = formData?.inputFields?.filter(
       (input) => input.title === value
     );
-
 
     if (foundInput.length === 0) {
       let modifiedList = formData.inputFields.map((input) => {
@@ -216,7 +191,7 @@ const FormEdit = () => {
           return input;
         }
       });
-      console.log(formData);
+     
       return { ...formData, inputFields: modifiedList };
     }
   };
@@ -235,10 +210,19 @@ const FormEdit = () => {
     return { ...formData, inputFields: modifiedList };
   };
   const deleteField = (id) => {
-    setErrMsg("")
+    setErrMsg("");
     let filteredList = formData.inputFields.filter((input) => input.id !== id);
     setFormData({ ...formData, inputFields: filteredList });
   };
+
+  function handleSort() {
+    const inputsClone = [...formData.inputFields];
+    const temp = inputsClone[dragInput.current];
+    inputsClone.splice(dragInput.current,1)
+    inputsClone.splice(draggedOverInput.current,0,temp)
+    
+    setFormData({ ...formData, inputFields: inputsClone });
+  }
 
   return (
     <div className="create-form-container">
@@ -250,15 +234,28 @@ const FormEdit = () => {
             <button
               className="icon-button"
               onClick={() =>
-                setEditor({ ...editor, editField: "title", title: formData.title })
+                setEditor({
+                  ...editor,
+                  editField: "title",
+                  title: formData.title,
+                })
               }>
               <RiPencilFill color="blue" size={25} />
             </button>
           </div>
 
-          <div className="input-list-container">
+          <ul className="input-list-container">
             {formData?.inputFields?.map((input, index) => (
-              <div className="list-item" key={index}>
+              <li
+                className="list-item"
+                key={index}
+                draggable
+                onDragStart={() => (dragInput.current = index)}
+                onDragEnter={() => {
+                  draggedOverInput.current = index;
+                }}
+                onDragEnd={handleSort}
+                onDragOver={(e) => e.preventDefault()}>
                 <BiGridVertical size={25} />
                 <input
                   className="input-field-read"
@@ -286,9 +283,9 @@ const FormEdit = () => {
                   onClick={() => deleteField(input.id)}>
                   <MdDelete color="red" size={25} />
                 </button>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
 
           {!inputStatus ? (
             <button
@@ -310,6 +307,10 @@ const FormEdit = () => {
                     key={field.id}
                     className="input-type-btn"
                     onClick={() => {
+                      addInput(field.inputType, field.label);
+                    }}
+                    draggable
+                    onDragEnd={() => {
                       addInput(field.inputType, field.label);
                     }}>
                     {field.id}
@@ -339,7 +340,7 @@ const FormEdit = () => {
                   value={editor.title}
                   required
                   onChange={(e) => {
-                    setErrMsg("")
+                    setErrMsg("");
                     setEditor({ ...editor, title: e.target.value });
                     setFormData({ ...formData, title: e.target.value });
                   }}
@@ -365,7 +366,7 @@ const FormEdit = () => {
                       // setFormData({...formData,inputFields:[...formData.inputFields.map((field)=>(field.id===editor.id)?({...field,title:e.target.value}):(field))]})
                     }}
                   />
-                  
+
                   <label className="form-label">Title</label>
                 </div>
                 <div className="input-box">
@@ -398,10 +399,9 @@ const FormEdit = () => {
         className="submit-btn save-form"
         onClick={(e) => {
           handleSubmit(e);
-        }} disabled={!isSubmit}>
+        }}>
         SAVE FORM
       </button>
-     
     </div>
   );
 };

@@ -76,18 +76,18 @@
 }
 
 .form-input-field::-webkit-input-placeholder {
-  color: transparent; /* Change this to your preferred color */
+  color: transparent; 
 }
 
 .form-input-field::-moz-placeholder {
-  color: transparent; /* Change this to your preferred color */
+  color: transparent; 
 }
 
 .form-input-field:-ms-input-placeholder {
-  color: transparent; /* Change this to your preferred color */
+  color: transparent; 
 }
 
-/* Standard placeholder */
+
 .form-input-field::placeholder {
   color: transparent;
 }
@@ -115,4 +115,10 @@
   position:absolute;
   bottom:-15px;
   color:red;
+} */
+/* .password-container{
+  display:flex;
+  align-items: center;
+  gap:10px;
+  width:100%;
 } */

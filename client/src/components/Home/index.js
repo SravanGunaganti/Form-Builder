@@ -8,7 +8,7 @@ const Home = () => {
   useEffect(() => {
     const fetchForms = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/forms"); // Adjust the endpoint as needed
+        const response = await fetch("http://localhost:4000/api/forms");
         if (!response.ok) {
           throw new Error("Failed to fetch forms");
         }
